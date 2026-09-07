@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
-import { IdentityVault, IdentityItem } from "@/components/IdentityVault";
+import { CleanFlowWorkbench } from "@/components/CleanFlowWorkbench";
 import { MerkleExplorer, MerkleState } from "@/components/MerkleExplorer";
-import { ProofStudio, ProofResponse } from "@/components/ProofStudio";
-import { OnChainVerifier, VerificationResponse } from "@/components/OnChainVerifier";
 import { MathProofs } from "@/components/MathProofs";
 import { DefenseModal } from "@/components/DefenseModal";
-import { Shield, Sparkles } from "lucide-react";
+import { IdentityItem } from "@/components/IdentityVault";
+import { ProofResponse } from "@/components/ProofStudio";
+import { VerificationResponse } from "@/components/OnChainVerifier";
+import { ShieldCheck, GitBranch, BookOpen, Sparkles } from "lucide-react";
 
 // Default Initial Identities for instant zero-delay SSR paint
 const INITIAL_IDENTITIES: IdentityItem[] = [
@@ -48,6 +49,7 @@ const INITIAL_IDENTITIES: IdentityItem[] = [
 
 export default function Home() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [activeView, setActiveView] = useState<"flow" | "merkle" | "math">("flow");
   const [isDefenseModalOpen, setIsDefenseModalOpen] = useState(false);
 
   // Core State
@@ -76,7 +78,7 @@ export default function Home() {
     }
   };
 
-  // Fetch initial data from backend (with localhost / 127.0.0.1 fallback)
+  // Fetch initial data from backend
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -98,7 +100,7 @@ export default function Home() {
     fetchInitialData();
   }, []);
 
-  const handleGenerateProof = async () => {
+  const handleGenerateProof = async (): Promise<ProofResponse | null> => {
     setIsGenerating(true);
     setVerifResult(null);
     try {
@@ -116,13 +118,15 @@ export default function Home() {
       if (!res.ok) {
         const err = await res.json();
         alert(`Proof generation error: ${err.detail}`);
-        return;
+        return null;
       }
 
       const data = await res.json();
       setProofData(data);
+      return data;
     } catch (err) {
       alert("Failed to reach FastAPI backend on port 8004.");
+      return null;
     } finally {
       setIsGenerating(false);
     }
@@ -160,7 +164,7 @@ export default function Home() {
         setClaimedThreshold(p.claimed_threshold);
         setScope(p.scope);
 
-        // Automatically synthesize proof for immediate review
+        // Auto-generate proof
         setIsGenerating(true);
         setVerifResult(null);
         const pRes = await fetch("http://127.0.0.1:8004/api/generate-proof", {
@@ -176,6 +180,17 @@ export default function Home() {
         const pData = await pRes.json();
         setProofData(pData);
         setIsGenerating(false);
+
+        // Auto-verify on-chain
+        setIsVerifying(true);
+        const vRes = await fetch("http://127.0.0.1:8004/api/verify-proof", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ proof_payload: pData }),
+        });
+        const vData = await vRes.json();
+        setVerifResult(vData);
+        setIsVerifying(false);
       }
     } catch (err) {
       console.error(err);
@@ -204,73 +219,103 @@ export default function Home() {
         onResetNullifiers={handleResetNullifiers}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Hero Section */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Header Hero */}
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-800/60 mb-2">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-800/60 mb-2">
                 <Sparkles className="h-3.5 w-3.5" />
-                Autonomous Capstone Project AY 2025-2026
+                Pillai HOC Autonomous Capstone Project • AY 2025-2026
               </div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                Zk-CredLock: Zero-Knowledge Decentralized Identity Engine
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+                Zk-CredLock: Zero-Knowledge Decentralized Identity
               </h1>
-              <p className="text-xs text-muted-foreground mt-1 max-w-3xl">
-                Prove discrete identity claims (Age &ge; 21, Solvency &ge; ₹75k, Honors CGPA &ge; 8.5) using Groth16 zk-SNARK circuits over BN254. Zero personal plaintext leaked. Verified on-chain via EVM pairing precompile 0x08 with deterministic replay-defending nullifiers.
+              <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
+                Selective attribute disclosure engine using Groth16 zk-SNARKs and BN254 bilinear pairings. Prove eligibility without revealing raw dates of birth, bank statements, or transcripts.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="px-2.5 py-1 rounded border border-border bg-muted">
-                FastAPI: <span className="text-emerald-400 font-bold">8004</span>
-              </span>
-              <span className="px-2.5 py-1 rounded border border-border bg-muted">
-                Next.js: <span className="text-cyan-400 font-bold">3003</span>
-              </span>
+
+            {/* View Switcher Tabs */}
+            <div className="flex items-center p-1 rounded-xl bg-muted/60 border border-border text-xs font-medium">
+              <button
+                onClick={() => setActiveView("flow")}
+                className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+                  activeView === "flow"
+                    ? "bg-background text-foreground shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Verification Flow</span>
+              </button>
+
+              <button
+                onClick={() => setActiveView("merkle")}
+                className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+                  activeView === "merkle"
+                    ? "bg-background text-foreground shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <GitBranch className="h-3.5 w-3.5 text-purple-400" />
+                <span>Merkle State</span>
+              </button>
+
+              <button
+                onClick={() => setActiveView("math")}
+                className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+                  activeView === "math"
+                    ? "bg-background text-foreground shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <BookOpen className="h-3.5 w-3.5 text-blue-400" />
+                <span>Math & Proofs</span>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* 2-Column Core Architecture Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Column (5 Cols): Identity Vault & Merkle State */}
-          <div className="lg:col-span-5 space-y-6">
-            <IdentityVault
-              identities={identities}
-              selectedDid={selectedDid}
-              onSelectDid={(did) => setSelectedDid(did)}
-            />
+        {/* VIEW 1: CLEAN GUIDED 4-STEP FLOW */}
+        {activeView === "flow" && (
+          <CleanFlowWorkbench
+            identities={identities}
+            selectedDid={selectedDid}
+            onSelectDid={(did) => setSelectedDid(did)}
+            attributeType={attributeType}
+            setAttributeType={setAttributeType}
+            claimedThreshold={claimedThreshold}
+            setClaimedThreshold={setClaimedThreshold}
+            scope={scope}
+            setScope={setScope}
+            onGenerateProof={handleGenerateProof}
+            isGenerating={isGenerating}
+            proofData={proofData}
+            onVerifyProof={handleVerifyProof}
+            isVerifying={isVerifying}
+            verifResult={verifResult}
+            onSelectPreset={handleSelectPreset}
+            onResetNullifiers={handleResetNullifiers}
+          />
+        )}
+
+        {/* VIEW 2: MERKLE TREE EXPLORER */}
+        {activeView === "merkle" && (
+          <div className="space-y-4">
             <MerkleExplorer
               merkleState={merkleState}
               selectedLeafIndex={currentIdentity ? currentIdentity.leaf_index : 0}
             />
           </div>
+        )}
 
-          {/* Right Column (7 Cols): Proof Studio & On-Chain Verifier */}
-          <div className="lg:col-span-7 space-y-6">
-            <ProofStudio
-              attributeType={attributeType}
-              setAttributeType={setAttributeType}
-              claimedThreshold={claimedThreshold}
-              setClaimedThreshold={setClaimedThreshold}
-              scope={scope}
-              setScope={setScope}
-              onGenerateProof={handleGenerateProof}
-              isGenerating={isGenerating}
-              proofData={proofData}
-              onSelectPreset={handleSelectPreset}
-            />
-            <OnChainVerifier
-              proofData={proofData}
-              onVerifyProof={handleVerifyProof}
-              isVerifying={isVerifying}
-              verifResult={verifResult}
-            />
+        {/* VIEW 3: CRYPTOGRAPHIC MATHEMATICAL PROOFS */}
+        {activeView === "math" && (
+          <div className="space-y-4">
+            <MathProofs />
           </div>
-        </div>
-
-        {/* Bottom Section: Cryptographic Proofs & Theorems */}
-        <MathProofs />
+        )}
       </main>
 
       {/* Defense Modal */}
@@ -281,8 +326,9 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-border bg-card/60 py-4 mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-muted-foreground">
-          Developed with ❤️ by the Pillai HOC Computer Engineering Capstone Team • Autonomous Academic Year 2025-2026
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>Pillai HOC College of Engineering & Technology (Autonomous) • Blockchain Lab</span>
+          <span>FastAPI Port: 8004 | Next.js Port: 3003</span>
         </div>
       </footer>
     </div>
