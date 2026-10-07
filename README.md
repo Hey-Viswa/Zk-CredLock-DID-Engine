@@ -59,17 +59,25 @@ $$\text{Nullifier} = \text{Poseidon}(\text{SecretKey}, \text{ScopeHash})$$
 
 ## ⚡ Quickstart & Installation
 
-### 1. Launch Everything (Windows One-Click)
+### 🍎 macOS / Linux (One-Click Automated)
+```bash
+chmod +x start_mac.sh
+./start_mac.sh
+```
+*(See [`MAC_SETUP.md`](MAC_SETUP.md) for detailed presentation instructions).*
+
+### 🪟 Windows (One-Click Automated)
 Double-click `start_all.bat` in the project root:
 ```cmd
 start_all.bat
 ```
 
-### 2. Manual Startup
+### 🛠️ Manual Startup
 **Backend (FastAPI on Port 8004):**
 ```bash
 cd backend
-python -m pip install -r requirements.txt
+python3 -m venv .venv && source .venv/bin/activate # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
 python -m uvicorn api:app --host 127.0.0.1 --port 8004
 ```
 
