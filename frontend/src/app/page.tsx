@@ -9,7 +9,8 @@ import { DefenseModal } from "@/components/DefenseModal";
 import { IdentityItem } from "@/components/IdentityVault";
 import { ProofResponse } from "@/components/ProofStudio";
 import { VerificationResponse } from "@/components/OnChainVerifier";
-import { ShieldCheck, GitBranch, BookOpen, Sparkles } from "lucide-react";
+import { ZkPipeline3D } from "@/components/ZkPipeline3D";
+import { ShieldCheck, GitBranch, BookOpen, Sparkles, Box } from "lucide-react";
 
 // Default Initial Identities for instant zero-delay SSR paint
 const INITIAL_IDENTITIES: IdentityItem[] = [
@@ -49,7 +50,7 @@ const INITIAL_IDENTITIES: IdentityItem[] = [
 
 export default function Home() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [activeView, setActiveView] = useState<"flow" | "merkle" | "math">("flow");
+  const [activeView, setActiveView] = useState<"pipeline3d" | "flow" | "merkle" | "math">("pipeline3d");
   const [isDefenseModalOpen, setIsDefenseModalOpen] = useState(false);
 
   // Core State
@@ -237,6 +238,18 @@ export default function Home() {
             {/* View Switcher Tabs */}
             <div className="flex items-center p-1 rounded-xl bg-muted/60 border border-border text-xs font-medium">
               <button
+                onClick={() => setActiveView("pipeline3d")}
+                className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+                  activeView === "pipeline3d"
+                    ? "bg-emerald-950/40 text-emerald-300 border border-emerald-800/80 shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Box className="h-3.5 w-3.5 text-emerald-400" />
+                <span>3D Spatial Pipeline</span>
+              </button>
+
+              <button
                 onClick={() => setActiveView("flow")}
                 className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
                   activeView === "flow"
@@ -274,6 +287,28 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* VIEW 0: 3D INTERACTIVE SPATIAL PIPELINE (FLAGSHIP) */}
+        {activeView === "pipeline3d" && (
+          <ZkPipeline3D
+            identities={identities}
+            selectedDid={selectedDid}
+            onSelectDid={(did) => setSelectedDid(did)}
+            attributeType={attributeType}
+            setAttributeType={setAttributeType}
+            claimedThreshold={claimedThreshold}
+            setClaimedThreshold={setClaimedThreshold}
+            scope={scope}
+            setScope={setScope}
+            onGenerateProof={handleGenerateProof}
+            isGenerating={isGenerating}
+            proofData={proofData}
+            onVerifyProof={handleVerifyProof}
+            isVerifying={isVerifying}
+            verifResult={verifResult}
+            merkleState={merkleState}
+          />
+        )}
 
         {/* VIEW 1: CLEAN GUIDED 4-STEP FLOW */}
         {activeView === "flow" && (
