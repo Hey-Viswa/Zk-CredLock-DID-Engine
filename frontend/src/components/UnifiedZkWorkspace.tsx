@@ -107,8 +107,11 @@ export const UnifiedZkWorkspace: React.FC = () => {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   // Camera Target Interpolation
-  const targetCamPos = useRef(new THREE.Vector3(-7, 2.5, 7.5));
-  const targetLook = useRef(new THREE.Vector3(-7, 0, 0));
+  // Camera Target Interpolation
+  const targetCamPos = useRef(new THREE.Vector3(-8.5, 2.0, 7.5));
+  const targetLook = useRef(new THREE.Vector3(-8.5, 0, 0));
+
+  const activeLeafIndex = activeIdentity?.leaf_index ?? 0;
 
   const animStateRef = useRef({
     step: currentStep,
@@ -116,6 +119,7 @@ export const UnifiedZkWorkspace: React.FC = () => {
     hasProof: !!proofData,
     hasResult: !!verifResult,
     isValid: verifResult?.is_valid === true,
+    leafIndex: activeLeafIndex,
   });
 
   useEffect(() => {
@@ -125,28 +129,29 @@ export const UnifiedZkWorkspace: React.FC = () => {
       hasProof: !!proofData,
       hasResult: !!verifResult,
       isValid: verifResult?.is_valid === true,
+      leafIndex: activeLeafIndex,
     };
-  }, [currentStep, isSynthesizing, proofData, verifResult]);
+  }, [currentStep, isSynthesizing, proofData, verifResult, activeLeafIndex]);
 
   // Camera Focus Switcher per Step
   const focusStepCamera = (step: 1 | 2 | 3 | 4) => {
     setCurrentStep(step);
     switch (step) {
-      case 1: // Identity Enclave
-        targetCamPos.current.set(-7, 2.2, 7.5);
-        targetLook.current.set(-7, 0, 0);
+      case 1: // Identity Enclave Vault
+        targetCamPos.current.set(-8.5, 2.0, 7.5);
+        targetLook.current.set(-8.5, 0, 0);
         break;
       case 2: // Policy Gate
-        targetCamPos.current.set(-4.5, 3.0, 9.5);
-        targetLook.current.set(-4.5, 0.5, 0);
+        targetCamPos.current.set(-4.8, 2.4, 7.5);
+        targetLook.current.set(-4.8, 0.4, 0);
         break;
-      case 3: // Claim & Circuit
-        targetCamPos.current.set(-1.8, 2.2, 7.5);
-        targetLook.current.set(-1.8, 0, 0);
+      case 3: // 3D Poseidon Merkle Tree (Center Stage)
+        targetCamPos.current.set(0.0, 1.2, 8.5);
+        targetLook.current.set(0.0, 0.1, 0);
         break;
-      case 4: // EVM Blockchain & Merkle Root
-        targetCamPos.current.set(5.5, 3.2, 9.5);
-        targetLook.current.set(4.5, 0.5, 0);
+      case 4: // Groth16 Circuit & EVM Precompile (0x08)
+        targetCamPos.current.set(6.2, 2.2, 8.8);
+        targetLook.current.set(6.0, 0.2, 0);
         break;
     }
   };
@@ -168,7 +173,7 @@ export const UnifiedZkWorkspace: React.FC = () => {
     scene.background = new THREE.Color(0x09090b);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(-7, 2.2, 7.5);
+    camera.position.set(-8.5, 2.0, 7.5);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({
@@ -188,23 +193,27 @@ export const UnifiedZkWorkspace: React.FC = () => {
     controlsRef.current = controls;
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.4);
     dirLight.position.set(6, 14, 10);
     scene.add(dirLight);
 
+    const greenPointLight = new THREE.PointLight(0x10b981, 1.5, 12);
+    greenPointLight.position.set(0, 3, 2);
+    scene.add(greenPointLight);
+
     // Floor Grid
-    const grid = new THREE.GridHelper(28, 28, 0x27272a, 0x141417);
-    grid.position.y = -2.2;
+    const grid = new THREE.GridHelper(36, 36, 0x27272a, 0x141417);
+    grid.position.y = -2.5;
     scene.add(grid);
 
     // ----------------------------------------------------
-    // STATION 1: IDENTITY ENCLAVE (Step 1) at x = -7
+    // STATION 1: IDENTITY ENCLAVE (Step 1) at x = -8.5
     // ----------------------------------------------------
     const enclaveGroup = new THREE.Group();
-    enclaveGroup.position.set(-7, 0, 0);
+    enclaveGroup.position.set(-8.5, 0, 0);
 
     const phoneMesh = new THREE.Mesh(
       new THREE.BoxGeometry(2.2, 3.2, 0.4),
@@ -229,10 +238,10 @@ export const UnifiedZkWorkspace: React.FC = () => {
     scene.add(enclaveGroup);
 
     // ----------------------------------------------------
-    // STATION 2: POLICY CHALLENGE GATE (Step 2) at x = -4.5
+    // STATION 2: POLICY CHALLENGE GATE (Step 2) at x = -4.8
     // ----------------------------------------------------
     const policyGroup = new THREE.Group();
-    policyGroup.position.set(-4.5, 0.4, 0);
+    policyGroup.position.set(-4.8, 0.4, 0);
 
     const pole = new THREE.Mesh(
       new THREE.CylinderGeometry(0.08, 0.08, 2.6, 16),
@@ -251,108 +260,181 @@ export const UnifiedZkWorkspace: React.FC = () => {
     scene.add(policyGroup);
 
     // ----------------------------------------------------
-    // STATION 3: CLAIM & R1CS CIRCUIT (Step 3) at x = -1.8
+    // STATION 3: FULL 8-LEAF POSEIDON MERKLE TREE (Step 3) at x = 0.0
     // ----------------------------------------------------
-    const circuitGroup = new THREE.Group();
-    circuitGroup.position.set(-1.8, 0, 0);
+    const merkleTreeGroup = new THREE.Group();
+    merkleTreeGroup.position.set(0, 0, 0);
 
-    const board = new THREE.Mesh(
-      new THREE.BoxGeometry(2.6, 0.2, 2.6),
+    // Level 0: 8 Leaves (y = -1.6)
+    const leafMeshes: THREE.Mesh[] = [];
+    const leafPositions: THREE.Vector3[] = [];
+    for (let i = 0; i < 8; i++) {
+      const lx = -2.625 + i * 0.75;
+      const pos = new THREE.Vector3(lx, -1.6, 0);
+      leafPositions.push(pos);
+
+      const leafMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.22, 20, 20),
+        new THREE.MeshStandardMaterial({ color: 0x3f3f46, emissive: 0x18181b, emissiveIntensity: 0.3 })
+      );
+      leafMesh.position.copy(pos);
+      merkleTreeGroup.add(leafMesh);
+      leafMeshes.push(leafMesh);
+    }
+
+    // Level 1: 4 Parent Nodes (y = -0.6)
+    const parentMeshes: THREE.Mesh[] = [];
+    const parentPositions: THREE.Vector3[] = [];
+    [-2.25, -0.75, 0.75, 2.25].forEach((px) => {
+      const pos = new THREE.Vector3(px, -0.6, 0);
+      parentPositions.push(pos);
+
+      const pMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.26, 20, 20),
+        new THREE.MeshStandardMaterial({ color: 0x3f3f46, emissive: 0x18181b, emissiveIntensity: 0.3 })
+      );
+      pMesh.position.copy(pos);
+      merkleTreeGroup.add(pMesh);
+      parentMeshes.push(pMesh);
+    });
+
+    // Level 2: 2 Sub-Root Nodes (y = 0.4)
+    const subRootMeshes: THREE.Mesh[] = [];
+    const subRootPositions: THREE.Vector3[] = [];
+    [-1.5, 1.5].forEach((srx) => {
+      const pos = new THREE.Vector3(srx, 0.4, 0);
+      subRootPositions.push(pos);
+
+      const srMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.32, 24, 24),
+        new THREE.MeshStandardMaterial({ color: 0x3f3f46, emissive: 0x18181b, emissiveIntensity: 0.3 })
+      );
+      srMesh.position.copy(pos);
+      merkleTreeGroup.add(srMesh);
+      subRootMeshes.push(srMesh);
+    });
+
+    // Level 3: 1 Merkle State Root (y = 1.6)
+    const rootPos = new THREE.Vector3(0, 1.6, 0);
+    const rootSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(0.44, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669, emissiveIntensity: 1.0 })
+    );
+    rootSphere.position.copy(rootPos);
+    merkleTreeGroup.add(rootSphere);
+
+    // Rotating Emerald Halo Ring on Root
+    const rootHalo = new THREE.Mesh(
+      new THREE.TorusGeometry(0.72, 0.03, 16, 64),
+      new THREE.MeshBasicMaterial({ color: 0x34d399, transparent: true, opacity: 0.8 })
+    );
+    rootHalo.position.copy(rootPos);
+    rootHalo.rotation.x = Math.PI / 2.5;
+    merkleTreeGroup.add(rootHalo);
+
+    // Branch Connections (Lines)
+    interface BranchConnection {
+      line: THREE.Line;
+      type: "leaf" | "parent" | "subroot";
+      childIdx: number;
+    }
+    const branchConnections: BranchConnection[] = [];
+
+    // Connect Leaves -> Parents (8 branches)
+    leafPositions.forEach((lPos, idx) => {
+      const pIdx = Math.floor(idx / 2);
+      const pPos = parentPositions[pIdx];
+      const geom = new THREE.BufferGeometry().setFromPoints([lPos, pPos]);
+      const mat = new THREE.LineBasicMaterial({ color: 0x27272a, linewidth: 2 });
+      const line = new THREE.Line(geom, mat);
+      merkleTreeGroup.add(line);
+      branchConnections.push({ line, type: "leaf", childIdx: idx });
+    });
+
+    // Connect Parents -> SubRoots (4 branches)
+    parentPositions.forEach((pPos, idx) => {
+      const srIdx = Math.floor(idx / 2);
+      const srPos = subRootPositions[srIdx];
+      const geom = new THREE.BufferGeometry().setFromPoints([pPos, srPos]);
+      const mat = new THREE.LineBasicMaterial({ color: 0x27272a, linewidth: 2 });
+      const line = new THREE.Line(geom, mat);
+      merkleTreeGroup.add(line);
+      branchConnections.push({ line, type: "parent", childIdx: idx });
+    });
+
+    // Connect SubRoots -> Root (2 branches)
+    subRootPositions.forEach((srPos, idx) => {
+      const geom = new THREE.BufferGeometry().setFromPoints([srPos, rootPos]);
+      const mat = new THREE.LineBasicMaterial({ color: 0x27272a, linewidth: 2 });
+      const line = new THREE.Line(geom, mat);
+      merkleTreeGroup.add(line);
+      branchConnections.push({ line, type: "subroot", childIdx: idx });
+    });
+
+    scene.add(merkleTreeGroup);
+
+    // ----------------------------------------------------
+    // STATION 4: GROTH16 CIRCUIT & EVM PRECOMPILE (Step 4) at x = 6.2
+    // ----------------------------------------------------
+    const station4Group = new THREE.Group();
+    station4Group.position.set(6.2, 0, 0);
+
+    // Circuit Board at x = -1.2 relative (x = 5.0 world)
+    const circuitBoard = new THREE.Mesh(
+      new THREE.BoxGeometry(2.2, 0.2, 2.2),
       new THREE.MeshStandardMaterial({ color: 0x18181b, metalness: 0.9, roughness: 0.25 })
     );
-    board.position.y = -1.1;
-    circuitGroup.add(board);
+    circuitBoard.position.set(-1.2, -1.1, 0);
+    station4Group.add(circuitBoard);
 
     const gateMeshes: THREE.Mesh[] = [];
     const gateColors = [0xf59e0b, 0xd97706, 0xb45309];
-    const gatePos = [new THREE.Vector3(-0.7, -0.4, 0), new THREE.Vector3(0.7, -0.4, 0), new THREE.Vector3(0, 0.6, 0)];
+    const gatePos = [new THREE.Vector3(-1.7, -0.4, 0), new THREE.Vector3(-0.7, -0.4, 0), new THREE.Vector3(-1.2, 0.4, 0)];
 
     gatePos.forEach((p, idx) => {
       const g = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.4, 0.4, 0.6, 16),
+        new THREE.CylinderGeometry(0.35, 0.35, 0.5, 16),
         new THREE.MeshStandardMaterial({ color: gateColors[idx], emissive: gateColors[idx], emissiveIntensity: 0.5 })
       );
       g.position.copy(p);
-      circuitGroup.add(g);
+      station4Group.add(g);
       gateMeshes.push(g);
     });
 
-    scene.add(circuitGroup);
-
-    // ----------------------------------------------------
-    // STATION 4: EVM PRECOMPILE & MERKLE ROOT (Step 4) at x = 5.5
-    // ----------------------------------------------------
-    const chainGroup = new THREE.Group();
-    chainGroup.position.set(5.5, 0, 0);
-
-    // Merkle State Tree (Left side of station 4)
-    const merkleMiniGroup = new THREE.Group();
-    merkleMiniGroup.position.set(-2.5, 0, 0);
-
-    const rootSphere = new THREE.Mesh(
-      new THREE.SphereGeometry(0.45, 32, 32),
-      new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669, emissiveIntensity: 0.9 })
-    );
-    rootSphere.position.set(0, 1.4, 0);
-    merkleMiniGroup.add(rootSphere);
-
-    const branchLeft = new THREE.Mesh(
-      new THREE.SphereGeometry(0.28, 20, 20),
-      new THREE.MeshStandardMaterial({ color: 0xa855f7, emissive: 0x7e22ce, emissiveIntensity: 0.6 })
-    );
-    branchLeft.position.set(-0.9, 0.3, 0);
-    merkleMiniGroup.add(branchLeft);
-
-    const leafActive = new THREE.Mesh(
-      new THREE.SphereGeometry(0.22, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0891b2, emissiveIntensity: 1 })
-    );
-    leafActive.position.set(-1.4, -0.8, 0);
-    merkleMiniGroup.add(leafActive);
-
-    const witnessBeam = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(-1.4, -0.8, 0),
-        new THREE.Vector3(-0.9, 0.3, 0),
-        new THREE.Vector3(0, 1.4, 0),
-      ]),
-      new THREE.LineBasicMaterial({ color: 0x10b981, linewidth: 3 })
-    );
-    merkleMiniGroup.add(witnessBeam);
-
-    chainGroup.add(merkleMiniGroup);
-
-    // Ethereum Diamond Core & Precompile 0x08 Rings
+    // Ethereum Diamond Core at x = +1.2 relative (x = 7.4 world)
     const ethDiamond = new THREE.Mesh(
       new THREE.OctahedronGeometry(1.2, 0),
       new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x047857, emissiveIntensity: 0.6 })
     );
-    chainGroup.add(ethDiamond);
+    ethDiamond.position.set(1.2, 0, 0);
+    station4Group.add(ethDiamond);
 
     const ring1 = new THREE.Mesh(
       new THREE.TorusGeometry(1.7, 0.04, 16, 64),
       new THREE.MeshBasicMaterial({ color: 0x34d399, transparent: true, opacity: 0.7 })
     );
+    ring1.position.set(1.2, 0, 0);
     ring1.rotation.x = Math.PI / 3;
-    chainGroup.add(ring1);
+    station4Group.add(ring1);
 
     const ring2 = new THREE.Mesh(
       new THREE.TorusGeometry(1.7, 0.04, 16, 64),
       new THREE.MeshBasicMaterial({ color: 0x34d399, transparent: true, opacity: 0.7 })
     );
+    ring2.position.set(1.2, 0, 0);
     ring2.rotation.y = Math.PI / 3;
-    chainGroup.add(ring2);
+    station4Group.add(ring2);
 
-    scene.add(chainGroup);
+    scene.add(station4Group);
 
     // ----------------------------------------------------
     // MOVING DATA PACKET (Cryptographic Proof Token)
     // ----------------------------------------------------
     const proofCapsule = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.22, 0.45, 16, 16),
+      new THREE.CapsuleGeometry(0.24, 0.5, 16, 16),
       new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 1.4 })
     );
-    proofCapsule.position.set(-7, 0, 0);
+    proofCapsule.position.set(-8.5, 0, 0);
     scene.add(proofCapsule);
 
     // Animation Loop
@@ -374,6 +456,7 @@ export const UnifiedZkWorkspace: React.FC = () => {
       ring1.rotation.z = elapsedTime * 0.7;
       ring2.rotation.x = elapsedTime * 0.6;
       rootSphere.rotation.y = elapsedTime * 0.4;
+      rootHalo.rotation.z = elapsedTime * 0.6;
 
       // Gate pulses when synthesizing
       gateMeshes.forEach((g, idx) => {
@@ -384,23 +467,153 @@ export const UnifiedZkWorkspace: React.FC = () => {
         }
       });
 
-      // Proof Token Placement / Flight
+      // ----------------------------------------------------
+      // DYNAMIC MERKLE TREE ILLUMINATION
+      // ----------------------------------------------------
+      const activeLeaf = animStateRef.current.leafIndex;
+      const siblingLeaf = activeLeaf % 2 === 0 ? activeLeaf + 1 : activeLeaf - 1;
+      const parentIdx = Math.floor(activeLeaf / 2);
+      const parentSibling = parentIdx % 2 === 0 ? parentIdx + 1 : parentIdx - 1;
+      const subRootIdx = Math.floor(parentIdx / 2);
+      const subRootSibling = subRootIdx % 2 === 0 ? subRootIdx + 1 : subRootIdx - 1;
+
+      // 1. Color Leaves
+      leafMeshes.forEach((lMesh, idx) => {
+        const mat = lMesh.material as THREE.MeshStandardMaterial;
+        if (idx === activeLeaf) {
+          mat.color.setHex(0x06b6d4);
+          mat.emissive.setHex(0x22d3ee);
+          mat.emissiveIntensity = 1.0 + Math.sin(elapsedTime * 6) * 0.3;
+          lMesh.scale.setScalar(1.25);
+        } else if (idx === siblingLeaf) {
+          mat.color.setHex(0xa855f7);
+          mat.emissive.setHex(0x7e22ce);
+          mat.emissiveIntensity = 0.8;
+          lMesh.scale.setScalar(1.1);
+        } else {
+          mat.color.setHex(0x3f3f46);
+          mat.emissive.setHex(0x18181b);
+          mat.emissiveIntensity = 0.2;
+          lMesh.scale.setScalar(1.0);
+        }
+      });
+
+      // 2. Color Parents
+      parentMeshes.forEach((pMesh, idx) => {
+        const mat = pMesh.material as THREE.MeshStandardMaterial;
+        if (idx === parentIdx) {
+          mat.color.setHex(0x10b981);
+          mat.emissive.setHex(0x059669);
+          mat.emissiveIntensity = 0.8;
+        } else if (idx === parentSibling) {
+          mat.color.setHex(0xa855f7);
+          mat.emissive.setHex(0x7e22ce);
+          mat.emissiveIntensity = 0.7;
+        } else {
+          mat.color.setHex(0x3f3f46);
+          mat.emissive.setHex(0x18181b);
+          mat.emissiveIntensity = 0.2;
+        }
+      });
+
+      // 3. Color SubRoots
+      subRootMeshes.forEach((srMesh, idx) => {
+        const mat = srMesh.material as THREE.MeshStandardMaterial;
+        if (idx === subRootIdx) {
+          mat.color.setHex(0x10b981);
+          mat.emissive.setHex(0x059669);
+          mat.emissiveIntensity = 0.9;
+        } else if (idx === subRootSibling) {
+          mat.color.setHex(0xa855f7);
+          mat.emissive.setHex(0x7e22ce);
+          mat.emissiveIntensity = 0.7;
+        } else {
+          mat.color.setHex(0x3f3f46);
+          mat.emissive.setHex(0x18181b);
+          mat.emissiveIntensity = 0.2;
+        }
+      });
+
+      // 4. Color Connecting Branch Lines
+      branchConnections.forEach((conn) => {
+        const mat = conn.line.material as THREE.LineBasicMaterial;
+        if (conn.type === "leaf") {
+          if (conn.childIdx === activeLeaf) {
+            mat.color.setHex(0x10b981);
+          } else if (conn.childIdx === siblingLeaf) {
+            mat.color.setHex(0xa855f7);
+          } else {
+            mat.color.setHex(0x27272a);
+          }
+        } else if (conn.type === "parent") {
+          if (conn.childIdx === parentIdx) {
+            mat.color.setHex(0x10b981);
+          } else if (conn.childIdx === parentSibling) {
+            mat.color.setHex(0xa855f7);
+          } else {
+            mat.color.setHex(0x27272a);
+          }
+        } else if (conn.type === "subroot") {
+          if (conn.childIdx === subRootIdx) {
+            mat.color.setHex(0x10b981);
+          } else {
+            mat.color.setHex(0x27272a);
+          }
+        }
+      });
+
+      // ----------------------------------------------------
+      // MOVING DATA PACKET (TRAVERSING THE MERKLE TREE)
+      // ----------------------------------------------------
       const step = animStateRef.current.step;
-      let targetX = -7;
-      let targetY = 0;
+      let targetX = -8.5;
+      let targetY = 0.2;
 
       if (step === 1) {
-        targetX = -7;
-        targetY = Math.sin(elapsedTime * 3) * 0.2;
+        // Station 1: Enclave
+        targetX = -8.5;
+        targetY = 0.2 + Math.sin(elapsedTime * 3) * 0.15;
       } else if (step === 2) {
-        targetX = -4.5;
-        targetY = 1.0 + Math.sin(elapsedTime * 3) * 0.15;
+        // Station 2: Policy Gate
+        targetX = -4.8;
+        targetY = 0.8 + Math.sin(elapsedTime * 3) * 0.15;
       } else if (step === 3) {
-        targetX = -1.8;
-        targetY = 0.5 + Math.sin(elapsedTime * 4) * 0.2;
+        // Station 3: CLIMBING UP THE MERKLE TREE!
+        const xLeaf = leafPositions[activeLeaf]?.x ?? -2.625;
+        const xParent = parentPositions[parentIdx]?.x ?? -2.25;
+        const xSubRoot = subRootPositions[subRootIdx]?.x ?? -1.5;
+        const xRoot = 0.0;
+
+        // Smooth loop demonstrating the ascent through the binary tree
+        const climbCycle = (elapsedTime * 0.65) % 3.0;
+        if (climbCycle < 1.0) {
+          const t = climbCycle;
+          targetX = THREE.MathUtils.lerp(xLeaf, xParent, t);
+          targetY = THREE.MathUtils.lerp(-1.6, -0.6, t);
+        } else if (climbCycle < 2.0) {
+          const t = climbCycle - 1.0;
+          targetX = THREE.MathUtils.lerp(xParent, xSubRoot, t);
+          targetY = THREE.MathUtils.lerp(-0.6, 0.4, t);
+        } else {
+          const t = climbCycle - 2.0;
+          targetX = THREE.MathUtils.lerp(xSubRoot, xRoot, t);
+          targetY = THREE.MathUtils.lerp(0.4, 1.6, t);
+        }
       } else if (step === 4) {
-        targetX = 5.5;
-        targetY = Math.sin(elapsedTime * 3) * 0.25;
+        // Station 4: Circuit -> EVM Precompile
+        if (animStateRef.current.isSynthesizing) {
+          // Vibrating on Circuit Board during synthesis
+          targetX = 5.0 + Math.sin(elapsedTime * 24) * 0.08;
+          targetY = -0.5;
+        } else if (animStateRef.current.hasResult) {
+          // Inside the Ethereum Diamond Precompile
+          targetX = 7.4;
+          targetY = Math.sin(elapsedTime * 3) * 0.2;
+        } else {
+          // Resting at Circuit
+          targetX = 5.0;
+          targetY = -0.5 + Math.sin(elapsedTime * 3) * 0.15;
+        }
       }
 
       proofCapsule.position.x = THREE.MathUtils.lerp(proofCapsule.position.x, targetX, 0.08);
@@ -566,7 +779,7 @@ export const UnifiedZkWorkspace: React.FC = () => {
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
-              <span>3. Prover Claim</span>
+              <span>3. Merkle Tree (Leaf #{activeLeafIndex})</span>
             </button>
 
             <button
@@ -577,7 +790,7 @@ export const UnifiedZkWorkspace: React.FC = () => {
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
-              <span>4. Synthesize & Chain Verify</span>
+              <span>4. Circuit & EVM Precompile</span>
             </button>
           </div>
 
@@ -602,7 +815,7 @@ export const UnifiedZkWorkspace: React.FC = () => {
             )}
             {currentStep === 3 && (
               <span>
-                <strong className="text-amber-400">Step 3 (ZK Circuit):</strong> The Groth16 arithmetic circuit binds the claim to scope &ldquo;{scope}&rdquo; and generates a single-use nullifier.
+                <strong className="text-amber-400">Step 3 (Poseidon Merkle State):</strong> Prover asserts membership in the 8-leaf Merkle Tree (Root: 0x2903...4ab). Watch the data packet enter Leaf #{activeLeafIndex} ({activeIdentity.name}) and climb up to the State Root!
               </span>
             )}
             {currentStep === 4 && (
@@ -626,7 +839,7 @@ export const UnifiedZkWorkspace: React.FC = () => {
               <h2 className="text-sm font-bold tracking-tight text-foreground">
                 {currentStep === 1 && "Step 1: Select Prover Identity"}
                 {currentStep === 2 && "Step 2: Define Verifier Policy"}
-                {currentStep === 3 && "Step 3: Assert Claim & Application Scope"}
+                {currentStep === 3 && "Step 3: Assert Claim & Poseidon Merkle Proof"}
                 {currentStep === 4 && "Step 4: Synthesize zk-SNARK & Verify On Chain"}
               </h2>
             </div>
@@ -782,6 +995,34 @@ export const UnifiedZkWorkspace: React.FC = () => {
                 <p className="text-[11px] text-muted-foreground">
                   Nullifier formula: <code className="text-amber-400">Poseidon(SecretKey, Hash(Scope))</code>. Guarantees anonymity while strictly blocking double-claims.
                 </p>
+              </div>
+
+              {/* 3D Merkle Tree Membership Card */}
+              <div className="p-3.5 rounded-xl border border-cyan-800/40 bg-cyan-950/20 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-cyan-300 font-bold flex items-center gap-1.5">
+                    <span>🌳 Poseidon Merkle State Membership</span>
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-cyan-900/60 border border-cyan-700 text-cyan-200 font-mono text-[10px]">
+                    Depth: 3 • O(log 8)
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                  <div>
+                    <span className="text-zinc-400 block text-[10px]">Active Leaf in 3D:</span>
+                    <span className="text-cyan-300 font-bold">Leaf #{activeLeafIndex} ({activeIdentity.name})</span>
+                  </div>
+                  <div>
+                    <span className="text-zinc-400 block text-[10px]">Witness Sibling:</span>
+                    <span className="text-purple-300 font-bold">Leaf #{activeLeafIndex % 2 === 0 ? activeLeafIndex + 1 : activeLeafIndex - 1}</span>
+                  </div>
+                </div>
+                <div className="text-[10px] font-mono text-zinc-400 truncate pt-1 border-t border-cyan-900/30">
+                  State Root: <span className="text-emerald-400 font-semibold">0x29034ab69ecb6845bd3f18f6e9381519f540d5ff...</span>
+                </div>
+                <div className="text-[10px] text-cyan-200/80 bg-cyan-950/40 p-2 rounded-lg border border-cyan-800/30">
+                  ✨ <strong>3D Visualization:</strong> Watch the cyan proof token enter Leaf #{activeLeafIndex} and ascend through the tree levels to the State Root!
+                </div>
               </div>
 
               <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-xs text-amber-200 flex items-center gap-2">
