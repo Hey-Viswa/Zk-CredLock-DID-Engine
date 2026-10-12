@@ -215,8 +215,6 @@ export default function Home() {
       <Navbar
         theme={theme}
         toggleTheme={toggleTheme}
-        onOpenDefenseModal={() => setIsDefenseModalOpen(true)}
-        onResetNullifiers={handleResetNullifiers}
       />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -226,7 +224,7 @@ export default function Home() {
             <div>
               <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-800/60 mb-2">
                 <Sparkles className="h-3.5 w-3.5" />
-                Pillai HOC Autonomous Capstone Project • AY 2025-2026
+                Groth16 zk-SNARK • EVM Bilinear Pairing • Production Protocol
               </div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
                 Zk-CredLock: Zero-Knowledge Decentralized Identity
@@ -327,8 +325,8 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border bg-card/60 py-4 mt-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-          <span>Pillai HOC College of Engineering & Technology (Autonomous) • Blockchain Lab</span>
-          <span>FastAPI Port: 8004 | Next.js Port: 3003</span>
+          <span>Zk-CredLock Protocol • Zero-Knowledge Decentralized Identity Engine</span>
+          <span className="font-mono">BN254 Pairing (Precompile 0x08) • Poseidon Merkle State</span>
         </div>
       </footer>
     </div>

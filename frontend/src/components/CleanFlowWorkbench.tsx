@@ -669,15 +669,14 @@ export const CleanFlowWorkbench: React.FC<CleanFlowWorkbenchProps> = ({
                 <span>Test Replay Attack</span>
               </button>
 
-              {/* Start New Scenario */}
+              {/* Start New Verification */}
               <button
                 onClick={() => {
                   setCurrentStep(1);
-                  onResetNullifiers();
                 }}
                 className="px-4 py-2 rounded-lg bg-zinc-100 text-zinc-950 hover:bg-zinc-200 font-semibold text-xs tracking-wide transition shadow-sm"
               >
-                Reset & New Scenario
+                New Verification
               </button>
             </div>
           </div>
