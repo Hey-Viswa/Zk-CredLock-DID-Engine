@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CredLock Blockchain Project Report</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000000;
+    background: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    height: 297mm;
+    page-break-after: always;
+    position: relative;
+    padding: 25mm 25mm 20mm 25mm;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  /* Running Header */
+  .header-running {
+    position: absolute;
+    top: 12mm;
+    left: 25mm;
+    right: 25mm;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5pt;
+    font-style: italic;
+  }
+  .header-running .inst {
+    font-style: normal;
+    font-size: 9pt;
+  }
+  .page-number-top {
+    font-size: 10pt;
+    font-weight: bold;
+  }
+
+  /* Running Footer (Roman or Arabic) */
+  .footer-center {
+    position: absolute;
+    bottom: 12mm;
+    left: 25mm;
+    right: 25mm;
+    text-align: center;
+    font-size: 11pt;
+  }
+
+  /* Typography */
+  h1.chap-head {
+    text-align: center;
+    font-size: 20pt;
+    font-weight: bold;
+    margin-top: 15mm;
+    margin-bottom: 6mm;
+    text-transform: uppercase;
+  }
+  h2.sec-head {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-top: 5mm;
+    margin-bottom: 3mm;
+  }
+  h3.subsec-head {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 4mm;
+    margin-bottom: 2mm;
+  }
+  p {
+    text-align: justify;
+    margin-bottom: 3.5mm;
+    text-indent: 0;
+  }
+  ul, ol {
+    margin-left: 6mm;
+    margin-bottom: 3.5mm;
+  }
+  li {
+    margin-bottom: 1.5mm;
+    text-align: justify;
+  }
+
+  /* Chapter Divider Pages */
+  .divider-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+  }
+  .divider-chap {
+    font-size: 26pt;
+    font-weight: bold;
+    margin-bottom: 4mm;
+  }
+  .divider-title {
+    font-size: 22pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #111;
+  }
+
+  /* Table of Contents */
+  .toc-table, .fig-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4mm;
+  }
+  .toc-table th, .fig-table th {
+    border-bottom: 1.5px solid #000;
+    padding: 6px 4px;
+    font-size: 11pt;
+    text-align: left;
+  }
+  .toc-table td, .fig-table td {
+    padding: 5px 4px;
+    font-size: 11pt;
+  }
+  .toc-dots {
+    border-bottom: 1px dotted #888;
+  }
+
+  /* Figures */
+  .figure-box {
+    text-align: center;
+    margin: 3mm 0 4mm 0;
+  }
+  .figure-box img {
+    max-width: 98%;
+    max-height: 110mm;
+    object-fit: contain;
+    border: 1px solid #444;
+    border-radius: 4px;
+  }
+  .figure-caption {
+    font-size: 10.5pt;
+    font-weight: bold;
+    margin-top: 2.5mm;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- =================================================================== -->
+<!-- PAGE 1: TITLE PAGE -->
+<!-- =================================================================== -->
+<div class="page" style="text-align: center; padding-top: 25mm;">
+  <p style="font-size: 16pt; font-weight: bold; margin-bottom: 4mm;">MINI PROJECT REPORT</p>
+  <p style="font-size: 13pt; font-weight: bold; margin-bottom: 6mm;">ON</p>
+  <p style="font-size: 18pt; font-weight: bold; line-height: 1.35; margin-bottom: 10mm; color: #000;">
+    “CredLock: Zero-Knowledge Decentralized Identity (DID) &amp; Selective Attribute Proofs Engine”
+  </p>
+  <p style="font-size: 11.5pt; font-weight: bold; margin-bottom: 3mm;">
+    SUBMITTED IN PARTIAL FULFILMENT OF THE REQUIREMENTS OF<br>
+    DEGREE OF<br>
+    BACHELOR OF ENGINEERING
+  </p>
+  <p style="font-size: 12pt; font-weight: bold; margin-bottom: 4mm;">BY</p>
+  <p style="font-size: 12pt; font-weight: bold; line-height: 1.6; margin-bottom: 10mm;">
+    SUMAN GHOTGALKAR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BE A 28<br>
+    BISWARANJAN GIRI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BE A 29<br>
+    HARSH GURJAR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BE A 31
+  </p>
+  <p style="font-size: 12pt; font-weight: bold; margin-bottom: 2mm;">SUPERVISOR</p>
+  <p style="font-size: 13pt; font-weight: bold; margin-bottom: 12mm;">Mrs. DIPTI PATIL / Dr. RAJASHREE GADHAVE</p>
+  
+  <p style="font-size: 12pt; font-weight: bold; line-height: 1.35;">
+    DEPARTMENT OF COMPUTER ENGINEERING<br>
+    PILLAI HOC COLLEGE OF ENGINEERING AND TECHNOLOGY,<br>
+    (AUTONOMOUS)<br>
+    PILLAI’S HOCL EDUCATIONAL CAMPUS, HOCL COLONY,<br>
+    RASAYANI, TAL: KHALAPUR, DIST RAIGAD 410207<br>
+    UNIVERSITY OF MUMBAI<br>
+    [2026-27]
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 2: CERTIFICATE -->
+<!-- =================================================================== -->
+<div class="page" style="padding-top: 25mm;">
+  <p style="text-align: center; font-size: 13pt; margin-bottom: 2mm;">Mahatma Education Society’s</p>
+  <p style="text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 1mm;">
+    Pillai HOC College of Engineering and Technology
+  </p>
+  <p style="text-align: center; font-size: 13pt; font-weight: bold; margin-bottom: 1mm;">(AUTONOMOUS)</p>
+  <p style="text-align: center; font-size: 12pt; margin-bottom: 1mm;">Rasayani-410207</p>
+  <p style="text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 8mm;">2026-27</p>
+  <p style="text-align: center; font-size: 18pt; font-weight: bold; text-decoration: underline; margin-bottom: 8mm;">
+    Certificate
+  </p>
+  <p style="font-size: 12pt; line-height: 1.8; text-align: justify; margin-bottom: 12mm;">
+    This is to certify that the Mini Project entitled <strong>“CredLock: Zero-Knowledge Decentralized Identity (DID) &amp; Selective Attribute Proofs Engine”</strong> is a bona-fide work of <strong>Harsh Gurjar, Biswaranjan Giri, Suman Ghotgalkar</strong> submitted to the University of Mumbai in partial fulfilment of the requirement for the award of the degree of <strong>“Undergraduate”</strong> in <strong>“Computer Engineering”</strong>.
+  </p>
+  
+  <div style="margin-top: 35mm; display: flex; justify-content: space-between;">
+    <div style="text-align: center; width: 45%;">
+      <p style="font-weight: bold; margin-bottom: 15mm;">________________________</p>
+      <p style="font-size: 12pt; font-weight: bold;">Mrs. Dipti Patil / Dr. Rajashree Gadhave</p>
+      <p style="font-size: 11pt;">(Supervisor)</p>
+    </div>
+    <div style="text-align: center; width: 45%;">
+      <p style="font-weight: bold; margin-bottom: 15mm;">________________________</p>
+      <p style="font-size: 12pt; font-weight: bold;">Dr. Rajashree Gadhave</p>
+      <p style="font-size: 11pt;">(Head of Department)</p>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 3: APPROVAL -->
+<!-- =================================================================== -->
+<div class="page" style="padding-top: 25mm;">
+  <p style="text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 10mm;">
+    Mini Project Report Approval
+  </p>
+  <p style="font-size: 12pt; line-height: 1.8; text-align: justify; margin-bottom: 15mm;">
+    This project report entitled <strong>“CredLock: Zero-Knowledge Decentralized Identity (DID) &amp; Selective Attribute Proofs Engine”</strong> submitted by <strong>“Harsh Gurjar, Suman Ghotgalkar, Biswaranjan Giri”</strong> is approved for the degree of Bachelor of Engineering in Computer Engineering.
+  </p>
+  
+  <p style="font-size: 13pt; font-weight: bold; margin-bottom: 12mm;">Examiners</p>
+  <p style="font-size: 12pt; font-weight: bold; margin-bottom: 18mm;">1. _________________________________</p>
+  <p style="font-size: 12pt; font-weight: bold; margin-bottom: 25mm;">2. _________________________________</p>
+  
+  <p style="font-size: 12pt; font-weight: bold; margin-bottom: 4mm;">Date: ________________</p>
+  <p style="font-size: 12pt; font-weight: bold;">Place: Rasayani</p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 4: DECLARATION -->
+<!-- =================================================================== -->
+<div class="page" style="padding-top: 25mm;">
+  <p style="text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 8mm;">
+    Declaration
+  </p>
+  <p style="font-size: 12pt; line-height: 1.75; text-align: justify; margin-bottom: 20mm;">
+    We declare that this written submission represents our ideas in our own words and where other’s ideas or words have been included. We have adequately cited and referenced the original sources. We also declare that we have adhered to all principles of academic honesty and integrity and have not misrepresented or fabricated or falsified any idea/data/fact/source in our submission. We understand that any violation of the above will result in disciplinary action by the Institute and can also evoke penal action from the sources which have thus not been properly cited or from whom proper permission has not been taken when needed.
+  </p>
+  
+  <div style="margin-top: 25mm;">
+    <p style="font-size: 12pt; font-weight: bold; margin-bottom: 12mm;">Suman Ghotgalkar _____________________</p>
+    <p style="font-size: 12pt; font-weight: bold; margin-bottom: 12mm;">Biswaranjan Giri &nbsp;&nbsp;_____________________</p>
+    <p style="font-size: 12pt; font-weight: bold; margin-bottom: 16mm;">Harsh Gurjar &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_____________________</p>
+    <p style="font-size: 12pt; font-weight: bold;">Date: ________________</p>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 5: ABSTRACT (Page i) -->
+<!-- =================================================================== -->
+<div class="page" style="padding-top: 22mm;">
+  <p style="text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 6mm;">Abstract</p>
+  <p style="line-height: 1.6; text-align: justify; margin-bottom: 4mm;">
+    CredLock is a privacy-preserving decentralized identity (DID) and zero-knowledge verification framework engineered on Ethereum. In conventional digital authentication protocols, users are routinely compelled to disclose full plaintext documents—such as government Aadhaar cards, passports, or academic transcripts—merely to prove simple threshold predicates (e.g., “Is the citizen over 18?”, “Is the applicant’s CGPA above 8.5?”). This status quo introduces widespread identity theft vulnerabilities and enables centralized surveillance profiling.
+  </p>
+  <p style="line-height: 1.6; text-align: justify; margin-bottom: 4mm;">
+    CredLock re-architects verifiable credential authentication by combining W3C Decentralized Identifiers with client-side Groth16 zk-SNARKs evaluated over the BN254 elliptic curve. The user’s raw attributes remain strictly confined within client device memory. Using a 16-bit binary range decomposition constraint circuit, the client synthesizes a succinct mathematical proof π = (π<sub>A</sub>, π<sub>B</sub>, π<sub>C</sub>) in under 10 ms. Membership within an authorized user registry is validated via an 8-leaf algebraic Poseidon Merkle State Tree, which slashes arithmetic circuit constraint costs by 98% compared to SHA-256.
+  </p>
+  <p style="line-height: 1.6; text-align: justify; margin-bottom: 5mm;">
+    On-chain verification executes trustlessly within an Ethereum smart contract utilizing the EVM 0x08 ecPairing precompile, completing verification in 3.12 ms with a deterministic gas expenditure of 215,380 gas. To permanently defend against replay attacks while preserving cross-service privacy, the architecture enforces unforgeable deterministic nullifiers N = Poseidon(sk, scope). CredLock establishes an end-to-end mathematical bridge between sovereign user privacy and immutable distributed ledger consensus.
+  </p>
+  <p style="line-height: 1.5; text-align: justify;">
+    <strong>Keywords:</strong> Blockchain, Zero-Knowledge Proofs, zk-SNARKs, Groth16, Decentralized Identifiers (DID), Poseidon Hash, Merkle Trees, Ethereum, Smart Contracts, Bilinear Pairings, Nullifiers.
+  </p>
+  <div class="footer-center">i</div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 6: LIST OF FIGURES (Page ii) -->
+<!-- =================================================================== -->
+<div class="page" style="padding-top: 22mm;">
+  <p style="text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 8mm;">List of Figures</p>
+  
+  <table class="fig-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Figure No.</th>
+        <th style="width: 60%;">Figure Name</th>
+        <th style="width: 15%; text-align: right;">Page No.</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Figure 4.1.1</td>
+        <td>Proposed System Architecture (4-Station Pipeline)</td>
+        <td style="text-align: right;">8</td>
+      </tr>
+      <tr>
+        <td>Figure 5.1.1</td>
+        <td>Step 1 – Identity Enclave &amp; Credential Selection</td>
+        <td style="text-align: right;">11</td>
+      </tr>
+      <tr>
+        <td>Figure 5.1.2</td>
+        <td>Step 2 – Policy Challenge Gate Specification</td>
+        <td style="text-align: right;">12</td>
+      </tr>
+      <tr>
+        <td>Figure 5.1.3</td>
+        <td>Step 3 – 8-Leaf Poseidon Merkle State Membership</td>
+        <td style="text-align: right;">13</td>
+      </tr>
+      <tr>
+        <td>Figure 5.1.4</td>
+        <td>Step 4 – Groth16 Proof Synthesis &amp; Precompile Verification</td>
+        <td style="text-align: right;">14</td>
+      </tr>
+      <tr>
+        <td>Figure 5.1.5</td>
+        <td>Replay Attack Defense &amp; Nullifier Spent Rejection</td>
+        <td style="text-align: right;">15</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="footer-center">ii</div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 7: TABLE OF CONTENTS -->
+<!-- =================================================================== -->
+<div class="page" style="padding-top: 22mm;">
+  <p style="text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 6mm;">TABLE OF CONTENTS</p>
+  
+  <table class="toc-table">
+    <thead>
+      <tr>
+        <th style="width: 12%;">Sr. No.</th>
+        <th style="width: 73%;">Content</th>
+        <th style="width: 15%; text-align: right;">Page No.</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td><strong>Abstract</strong></td>
+        <td style="text-align: right;"><strong>i</strong></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><strong>List of Figures</strong></td>
+        <td style="text-align: right;"><strong>ii</strong></td>
+      </tr>
+      <tr>
+        <td><strong>1.</strong></td>
+        <td><strong>Introduction</strong></td>
+        <td style="text-align: right;"><strong>1</strong></td>
+      </tr>
+      <tr>
+        <td>1.1</td>
+        <td>Background</td>
+        <td style="text-align: right;">2</td>
+      </tr>
+      <tr>
+        <td>1.2</td>
+        <td>Motivation</td>
+        <td style="text-align: right;">2</td>
+      </tr>
+      <tr>
+        <td><strong>2.</strong></td>
+        <td><strong>Literature Survey</strong></td>
+        <td style="text-align: right;"><strong>3</strong></td>
+      </tr>
+      <tr>
+        <td>2.1</td>
+        <td>Basic Terminologies</td>
+        <td style="text-align: right;">4</td>
+      </tr>
+      <tr>
+        <td>2.2</td>
+        <td>Existing System</td>
+        <td style="text-align: right;">5</td>
+      </tr>
+      <tr>
+        <td>2.3</td>
+        <td>Problem Statement</td>
+        <td style="text-align: right;">5</td>
+      </tr>
+      <tr>
+        <td><strong>3.</strong></td>
+        <td><strong>Requirement Gathering</strong></td>
+        <td style="text-align: right;"><strong>6</strong></td>
+      </tr>
+      <tr>
+        <td>3.1</td>
+        <td>Software and Hardware Requirements</td>
+        <td style="text-align: right;">7</td>
+      </tr>
+      <tr>
+        <td><strong>4.</strong></td>
+        <td><strong>Plan of Project</strong></td>
+        <td style="text-align: right;"><strong>8</strong></td>
+      </tr>
+      <tr>
+        <td>4.1</td>
+        <td>Proposed System Architecture</td>
+        <td style="text-align: right;">9</td>
+      </tr>
+      <tr>
+        <td>4.2</td>
+        <td>Methodology</td>
+        <td style="text-align: right;">10</td>
+      </tr>
+      <tr>
+        <td><strong>5.</strong></td>
+        <td><strong>Result Analysis</strong></td>
+        <td style="text-align: right;"><strong>11</strong></td>
+      </tr>
+      <tr>
+        <td>5.1</td>
+        <td>Results and Discussion</td>
+        <td style="text-align: right;">12</td>
+      </tr>
+      <tr>
+        <td><strong>6.</strong></td>
+        <td><strong>Conclusion</strong></td>
+        <td style="text-align: right;"><strong>16</strong></td>
+      </tr>
+      <tr>
+        <td><strong>7.</strong></td>
+        <td><strong>References</strong></td>
+        <td style="text-align: right;"><strong>17</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 8: CHAPTER 1 DIVIDER (Page 1) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">1</div>
+  
+  <div class="divider-page">
+    <div class="divider-chap">Chapter 1</div>
+    <div class="divider-title">Introduction</div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 9: CHAPTER 1 TEXT (Page 2) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">2</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">1. Introduction</h2>
+  
+  <h3 class="subsec-head">1.1 Background</h3>
+  <p>
+    In contemporary digital authentication paradigms, proof of eligibility relies overwhelmingly on physical or centralized electronic identification documents. Citizens must repeatedly provide government cards, academic degree certificates, or financial statements to banks, universities, and service providers. This model introduces severe structural vulnerabilities: sensitive biometric and personal data are over-disclosed to third parties who lack robust enterprise security, leading to large-scale data breaches, identity impersonation, and permanent tracking across services.
+  </p>
+  <p>
+    Decentralized Identifiers (DIDs) standardized by the World Wide Web Consortium (W3C) provide sovereign public-key identity roots. However, standard verifiable credentials require presenting plaintext certificates signed with ECDSA, preserving the risk of attribute over-disclosure. CredLock resolves this issue by integrating zero-knowledge Succinct Non-Interactive Arguments of Knowledge (zk-SNARKs) over the BN254 elliptic curve with an on-chain Ethereum Merkle state registry.
+  </p>
+
+  <h3 class="subsec-head">1.2 Motivation</h3>
+  <p>
+    The core motivation of CredLock is to establish a mathematically trustless system where users prove statements about their credentials without disclosing the credential itself. In real-world compliance, a verifier rarely requires a citizen’s exact birthdate; they merely require confirmation of the boolean condition: <em>Age ≥ 18</em>. Similarly, academic portals require verification that an applicant graduated from an accredited college with distinction, without requiring access to individual course grade sheets.
+  </p>
+  <p>
+    By marrying client-side arithmetic constraint circuits with Ethereum’s EVM 0x08 pairing precompile, CredLock guarantees zero-knowledge attribute verification, sub-10 ms proving latency, deterministic gas economics (215,380 gas), and complete replay attack resistance via single-use nullifiers.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 10: CHAPTER 2 DIVIDER (Page 3) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">3</div>
+  
+  <div class="divider-page">
+    <div class="divider-chap">Chapter 2</div>
+    <div class="divider-title">Literature Survey</div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 11: CHAPTER 2 TEXT (Page 4) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">4</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">2. Literature Survey</h2>
+  
+  <h3 class="subsec-head">2.1 Basic Terminologies</h3>
+  <ul>
+    <li><strong>Zero-Knowledge SNARKs (zk-SNARKs):</strong> Succinct cryptographic arguments enabling a prover to demonstrate knowledge of secret witness inputs satisfying arithmetic circuits without revealing the witness.</li>
+    <li><strong>Groth16 Protocol:</strong> A pairing-based zero-knowledge proof system over pairing-friendly curves (BN254) achieving minimal proof size (3 group elements: 2 in G<sub>1</sub>, 1 in G<sub>2</sub>) and constant-time verification.</li>
+    <li><strong>Rank-1 Constraint System (R1CS):</strong> A mathematical formulation expressing computational operations as quadratic constraints of the form ⟨a, w⟩ · ⟨b, w⟩ = ⟨c, w⟩.</li>
+    <li><strong>Poseidon Hash Function:</strong> An algebraic cryptographic hash function operating natively over prime fields via x<sup>5</sup> S-boxes, reducing circuit constraint counts by 98% compared to SHA-256.</li>
+    <li><strong>Merkle State Tree:</strong> A hierarchical hash tree where identity commitments form leaves and the root represents the immutable state anchor stored on the blockchain.</li>
+    <li><strong>Deterministic Nullifier:</strong> A cryptographic token N = Poseidon(sk, scope) uniquely binding an identity to a domain scope to prevent replay and double-claiming.</li>
+  </ul>
+
+  <h3 class="subsec-head">2.2 Existing System</h3>
+  <p>
+    Existing decentralized identity protocols rely primarily on public-key digital signatures (ECDSA, Ed25519) on W3C JSON-LD credential objects. When verifying an attribute, the prover sends the signed document to the verifier, exposing all plaintext fields. While zero-knowledge selective disclosure schemes exist, they traditionally use bitwise hash functions (SHA-256) inside circuits, causing constraint explosion (>25,000 constraints per hash) and multi-minute client proof generation times.
+  </p>
+
+  <h3 class="subsec-head">2.3 Problem Statement</h3>
+  <p>
+    Current decentralized identity systems suffer from plaintext over-disclosure, high arithmetic constraint overhead, and vulnerability to replay attacks. CredLock aims to construct an end-to-end zero-knowledge DID architecture utilizing Groth16 zk-SNARKs, Poseidon Merkle state trees, deterministic nullifiers, and EVM precompile 0x08 pairing verification.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 12: CHAPTER 3 DIVIDER (Page 5) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">5</div>
+  
+  <div class="divider-page">
+    <div class="divider-chap">Chapter 3</div>
+    <div class="divider-title">Requirement Gathering</div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 13: CHAPTER 3 TEXT (Page 6) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">6</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">3. Requirement Gathering</h2>
+  
+  <h3 class="subsec-head">3.1 Software and Hardware Requirements</h3>
+  <p><strong>Software Requirements:</strong></p>
+  <ul>
+    <li><strong>Operating System:</strong> Windows 11 / Linux (Ubuntu 22.04 LTS) / macOS</li>
+    <li><strong>Programming Languages:</strong> TypeScript / JavaScript, Python 3.12, Solidity ^0.8.20</li>
+    <li><strong>Zero-Knowledge Toolchain:</strong> Circom 2.1.8, SnarkJS 0.7.4</li>
+    <li><strong>Cryptographic Curve:</strong> BN254 (alt_bn128) Pairing-Friendly Curve</li>
+    <li><strong>Backend Engine:</strong> Python FastAPI microservice (port 8004) with uvicorn</li>
+    <li><strong>Frontend Framework:</strong> Next.js 14 (App Router) with Tailwind CSS and shadcn/ui</li>
+    <li><strong>3D Graphics &amp; Visualization:</strong> Three.js WebGL Engine (port 3003)</li>
+    <li><strong>Blockchain Environment:</strong> Hardhat / Foundry local EVM test node with precompile 0x08 support</li>
+  </ul>
+
+  <p><strong>Hardware Requirements:</strong></p>
+  <ul>
+    <li><strong>Processor:</strong> Intel Core i5/i7/i9 (10th Gen or newer) or AMD Ryzen 5/7/9</li>
+    <li><strong>RAM:</strong> Minimum 8 GB (16 GB recommended for rapid R1CS witness synthesis)</li>
+    <li><strong>Storage:</strong> Minimum 10 GB free solid-state storage (SSD)</li>
+    <li><strong>GPU:</strong> WebGL 2.0 compatible hardware graphics acceleration (NVIDIA / AMD / Intel Iris)</li>
+    <li><strong>Network:</strong> Local loopback networking (127.0.0.1) for microservice RPC communication</li>
+    <li><strong>Display:</strong> High-definition monitor (1080p / 4K UHD) for single-screen 3D pipeline visualization</li>
+  </ul>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 14: CHAPTER 4 DIVIDER (Page 7) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">7</div>
+  
+  <div class="divider-page">
+    <div class="divider-chap">Chapter 4</div>
+    <div class="divider-title">Plan of Project</div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 15: CHAPTER 4 ARCHITECTURE (Page 8) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">8</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">4.1 Proposed System Architecture</h2>
+  
+  <div class="figure-box">
+    <img src="file:///D:/ViswaOS/Coding/Projects/Zk-CredLock-DID-Engine/academic_deliverables/credlock_architecture_diagram.png" alt="Proposed System Architecture">
+    <div class="figure-caption">Figure 4.1.1: System Architecture</div>
+  </div>
+  
+  <p>
+    The system architecture of CredLock illustrates the comprehensive cryptographic pipeline uniting client-side zero-knowledge proof generation and Ethereum on-chain verification. The framework operates across four synchronized stations: (1) Client Enclave for raw attribute storage, (2) Groth16 Prover for 16-bit range proof synthesis, (3) 8-Leaf Poseidon Merkle State Tree for O(log N) inclusion proofs, and (4) Ethereum EVM Precompile 0x08 for bilinear pairing verification and replay nullifier enforcement.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 16: CHAPTER 4 METHODOLOGY (Page 9) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">9</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">4.2 Methodology</h2>
+  <p>
+    The operational methodology of CredLock unfolds across four sequential phases:
+  </p>
+  <p>
+    <strong>Phase 1: Enclave Credential Ingestion &amp; Commitment Generation:</strong><br>
+    The user enrolls their identity attributes (Secret Key <em>sk</em>, Age, Academic CGPA) inside the client device sandbox. An algebraic commitment <em>C = Poseidon(sk, salt)</em> is computed and anchored as a leaf node in the on-chain Merkle registry.
+  </p>
+  <p>
+    <strong>Phase 2: Arithmetic Circuit Range Decomposition:</strong><br>
+    When a verifier challenges the user with a threshold predicate (e.g., <em>Age ≥ 18</em>), the client circuit computes the difference Δ = Age - 18. To prevent finite field underflow wraparound, Δ is decomposed into 16 binary bits (b<sub>0</sub>, ..., b<sub>15</sub>), enforcing boolean constraints b<sub>j</sub>(b<sub>j</sub> - 1) = 0.
+  </p>
+  <p>
+    <strong>Phase 3: Poseidon Merkle Membership Path Proof:</strong><br>
+    The circuit validates that commitment <em>C</em> belongs to the current state tree by ascending the binary tree from leaf to root using 3 sibling witness nodes: Root = Poseidon(H<sub>1</sub>, Sibling<sub>2</sub>).
+  </p>
+  <p>
+    <strong>Phase 4: Groth16 Proof Synthesis &amp; EVM Precompile Verification:</strong><br>
+    The client synthesizes proof π = (π<sub>A</sub>, π<sub>B</sub>, π<sub>C</sub>). The Ethereum smart contract executes a bilinear pairing check via precompile 0x08: e(π<sub>A</sub>, π<sub>B</sub>) = e(α, β) · e(∑ x<sub>i</sub> γ<sub>i</sub>, δ) · e(π<sub>C</sub>, δ). Upon success, the nullifier is stored in contract memory to block future replay attempts.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 17: CHAPTER 5 DIVIDER (Page 10) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">10</div>
+  
+  <div class="divider-page">
+    <div class="divider-chap">Chapter 5</div>
+    <div class="divider-title">Result Analysis</div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 18: CHAPTER 5 - STEP 1 (Page 11) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">11</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">5.1 Results and Discussion</h2>
+  <h3 class="subsec-head">5.1.1 Identity Enclave Selection</h3>
+  
+  <div class="figure-box">
+    <img src="file:///D:/ViswaOS/Coding/Projects/Zk-CredLock-DID-Engine/academic_deliverables/assets/fig_5_1_1_enclave_selection.png" alt="Identity Enclave Selection">
+    <div class="figure-caption">Figure 5.1.1: Identity Enclave Selection</div>
+  </div>
+  
+  <p>
+    The screenshot illustrates Step 1 of the CredLock dashboard. The user selects an enrolled student identity (Viswa, Leaf #0, Age 23, CGPA 8.92). In the 3D WebGL viewport, the camera focuses on the cyan Off-Chain Enclave Vault station. Private attributes remain isolated in client memory and are never transmitted over the network; only the cryptographic commitment exists in the state tree.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 19: CHAPTER 5 - STEP 2 (Page 12) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">12</div>
+  
+  <h3 class="subsec-head" style="margin-top: 15mm;">5.1.2 Policy Challenge Gate</h3>
+  
+  <div class="figure-box">
+    <img src="file:///D:/ViswaOS/Coding/Projects/Zk-CredLock-DID-Engine/academic_deliverables/assets/fig_5_1_2_policy_gate.png" alt="Policy Challenge Gate">
+    <div class="figure-caption">Figure 5.1.2: Policy Challenge Gate</div>
+  </div>
+  
+  <p>
+    Step 2 demonstrates the Policy Challenge Gate. The verifier establishes the eligibility predicate (Age Gate: Required Threshold = 18). Preset options for Academic CGPA (≥ 8.5) and Income Solvency are available. The circuit configures a 16-bit binary range proof Δ = Age - 18 ≥ 0 without disclosing the prover’s birthdate.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 20: CHAPTER 5 - STEP 3 (Page 13) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">13</div>
+  
+  <h3 class="subsec-head" style="margin-top: 15mm;">5.1.3 Poseidon Merkle State Proof</h3>
+  
+  <div class="figure-box">
+    <img src="file:///D:/ViswaOS/Coding/Projects/Zk-CredLock-DID-Engine/academic_deliverables/assets/fig_5_1_3_merkle_state.png" alt="Poseidon Merkle State Proof">
+    <div class="figure-caption">Figure 5.1.3: Poseidon Merkle State Proof</div>
+  </div>
+  
+  <p>
+    Step 3 displays the 3D 8-Leaf Poseidon Merkle State Tree at center stage. Prover Viswa asserts membership over active State Root <code>0x29034ab6...</code>. The active prover leaf glows cyan, the sibling node illuminates purple, and the cryptographic data packet visibly ascends the tree levels to prove O(log N) membership before proof synthesis.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 21: CHAPTER 5 - STEP 4 & REPLAY (Page 14) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">14</div>
+  
+  <h3 class="subsec-head" style="margin-top: 15mm;">5.1.4 On-Chain Verification &amp; Anti-Replay Defense</h3>
+  
+  <div class="figure-box">
+    <img src="file:///D:/ViswaOS/Coding/Projects/Zk-CredLock-DID-Engine/academic_deliverables/assets/fig_5_1_6_replay_rejected.png" alt="On-Chain Verification and Anti-Replay Defense">
+    <div class="figure-caption">Figure 5.1.4: On-Chain Verification and Anti-Replay Defense</div>
+  </div>
+  
+  <p>
+    Step 4 displays on-chain verification and anti-replay testing. Proof π is verified in 3.12 ms consuming 215,380 gas via EVM precompile 0x08. When the evaluator clicks “Test Replay Attack”, the smart contract detects that the deterministic nullifier has already been recorded, immediately reverting with <code>ERR_NULLIFIER_ALREADY_SPENT</code> (Gas: 35,400), proving contract state persistence.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 22: CHAPTER 6 DIVIDER (Page 15) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">15</div>
+  
+  <div class="divider-page">
+    <div class="divider-chap">Chapter 6</div>
+    <div class="divider-title">Conclusion</div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 23: CONCLUSION TEXT (Page 16) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">16</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">Conclusion</h2>
+  <p>
+    CredLock establishes a robust, mathematically sound zero-knowledge decentralized identity framework for modern blockchain ecosystems. By integrating W3C Decentralized Identifiers with Groth16 zk-SNARKs over the BN254 elliptic curve, the system eliminates plaintext credential over-disclosure. Sensitive identity attributes remain strictly confined within client memory, while verifiable threshold proofs are generated in under 10 ms.
+  </p>
+  <p>
+    The adoption of algebraic Poseidon hashing reduces R1CS arithmetic constraint complexity by 98% compared to traditional SHA-256 implementations, enabling seamless execution on standard consumer web browsers. On-chain verification executes trustlessly within an Ethereum smart contract utilizing the EVM 0x08 ecPairing precompile, completing in 3.12 ms with a locked gas cost of 215,380 gas. Furthermore, deterministic nullifiers prevent double-claiming and cross-domain tracking.
+  </p>
+  <p>
+    Future extensions of this work include integrating recursive proof aggregation (Halo2/PLONK) to verify hundreds of identity proofs in a single transaction, hardware Secure Enclave integration for biometric proof authorization, and institutional zero-knowledge KYC compliance for DeFi liquidity protocols.
+  </p>
+</div>
+
+<!-- =================================================================== -->
+<!-- PAGE 24: REFERENCES (Page 17) -->
+<!-- =================================================================== -->
+<div class="page">
+  <div class="header-running">
+    <span>CredLock: Zero-Knowledge Decentralized Identity Engine</span>
+    <span class="inst">Pillai HOC College of Engineering and Technology (Autonomous), Rasayani</span>
+  </div>
+  <div class="page-number-top" style="position: absolute; top: 12mm; right: 25mm;">17</div>
+  
+  <h2 class="sec-head" style="margin-top: 15mm;">References</h2>
+  <ol style="margin-left: 6mm; font-size: 11pt; line-height: 1.6;">
+    <li>J. Groth, “On the Size of Pairing-Based Non-interactive Arguments,” in <em>Advances in Cryptology – EUROCRYPT 2016</em>, Lecture Notes in Computer Science, vol. 9666, Springer, pp. 305–326, 2016.</li>
+    <li>L. Grassi, R. Lüftenegger, C. Rechberger, D. Rotaru, and M. Schofnegger, “On a Generalization of Substitution-Permutation Networks: The HADES Design Strategy and Poseidon Hashing,” <em>IACR Transactions on Symmetric Cryptology</em>, vol. 2020, no. 2, pp. 248–288, 2020.</li>
+    <li>Vitalik Buterin and Christian Reitwiessner, “EIP-197: Precompiled contracts for optimal ate pairing check on the alt_bn128 curve,” <em>Ethereum Improvement Proposals</em>, no. 197, 2017.</li>
+    <li>M. Sporny, D. Longley, and M. Chadwick, “Decentralized Identifiers (DIDs) v1.0: Core architecture, data model, and representations,” <em>W3C Recommendation</em>, 2022. Available: https://www.w3.org/TR/did-core/</li>
+    <li>E. Ben-Sasson, A. Chiesa, E. Tromer, and M. Virza, “Succinct Non-Interactive Zero Knowledge for a von Neumann Architecture,” in <em>23rd USENIX Security Symposium</em>, pp. 781–796, 2014.</li>
+    <li>Gavin Wood, “Ethereum: A Secure Decentralised Generalised Transaction Ledger (Yellow Paper),” <em>Ethereum Project Yellow Paper</em>, 2014.</li>
+    <li>Circom 2.0 Documentation, “Circom and SnarkJS: A Tutorial for Zero-Knowledge Proofs,” iden3 Project. Available: https://docs.circom.io/</li>
+    <li>Ethereum Foundation, “EVM Precompiled Contracts Specification,” Available: https://ethereum.org/en/developers/docs/evm/</li>
+  </ol>
+</div>
+
+</body>
+</html>
